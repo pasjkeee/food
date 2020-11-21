@@ -1,7 +1,13 @@
+const   myTime = document.querySelectorAll('.timer__block'),
+        endTime = new Date(),
+        promTime = document.querySelector('.promotion__descr');
+        endTime.setMonth(endTime.getMonth() + 1, 0);
+        endTime.setHours(23, 59, 59, 999);
+        console.log(endTime);
 const myMenu = document.querySelector('.tabcontainer'),
       tabPhoto = myMenu.querySelectorAll('.tabcontent'),
       menuList = myMenu.querySelectorAll('.tabheader__item');
-
+      console.log(tabPhoto[0]);
       function disable(tab) {
       tab.forEach( (exp)=> {
                 exp.classList.add('hide');
@@ -27,7 +33,7 @@ const myMenu = document.querySelector('.tabcontainer'),
         });
      }
 
-   menuList.forEach( (e)=> {
+   menuList.forEach( (e, i)=> {
         e.addEventListener('click', (event)=> {
             event.preventDefault();
             removeCl(menuList);
@@ -38,3 +44,34 @@ const myMenu = document.querySelector('.tabcontainer'),
             setTab(tabPhoto, e, "ham", "Сбалансированное");
         });
    });
+function setZero(obj){
+    console.log(obj);
+    if(obj<10)
+    {
+        obj='0'+ obj;
+    }
+    return String(obj);
+}
+
+let Days = '', Hours = '', Minutes = '', Seconds = '';
+function gettingTime() {
+    let startTime = new Date();
+    Days = endTime.getDate() - startTime.getDate();
+    Days = setZero(Days);
+    Hours = endTime.getHours() - startTime.getHours();
+    Hours = setZero(Hours);
+    Minutes = endTime.getMinutes() - startTime.getMinutes();
+    Minutes = setZero(Minutes);
+    Seconds = endTime.getSeconds() - startTime.getSeconds();
+    Seconds = setZero(Seconds);
+    let arr = [Days, Hours, Minutes, Seconds];
+    myTime.forEach ( (e, i) => {
+        e.firstElementChild.innerHTML = arr[i];
+    });
+}
+
+setInterval (gettingTime, 999);
+promTime.innerHTML = "";
+promTime.innerHTML +=`Мы ценим каждого клиента и предлагаем вам стать одним из них на очень выгодных условиях.`;
+promTime.innerHTML +=`Каждому, кто закажет доставку питание на неделю, будет предоставлена скидка в размере <span>20%!</span>`;
+promTime.innerHTML +=`<br><br> Акция закончится ${endTime.toLocaleString("ru")} `;
