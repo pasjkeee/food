@@ -3,11 +3,10 @@ const   myTime = document.querySelectorAll('.timer__block'),
         promTime = document.querySelector('.promotion__descr');
         endTime.setMonth(endTime.getMonth() + 1, 0);
         endTime.setHours(23, 59, 59, 999);
-        console.log(endTime);
 const myMenu = document.querySelector('.tabcontainer'),
       tabPhoto = myMenu.querySelectorAll('.tabcontent'),
       menuList = myMenu.querySelectorAll('.tabheader__item');
-      console.log(tabPhoto[0]);
+      
       function disable(tab) {
       tab.forEach( (exp)=> {
                 exp.classList.add('hide');
@@ -23,29 +22,21 @@ const myMenu = document.querySelector('.tabcontainer'),
         });
      }
 
-     function setTab (ob1, ob2, str1, str2) {
-        ob1.forEach(item => {
-            if(item.firstElementChild.alt == str1 && ob2.innerHTML == str2) {
-                disable(tabPhoto);
-                item.classList.add('show', 'fade');
-                item.classList.remove('hide');
-            }
+   menuList.forEach( (item, i)=> {
+       item.addEventListener('click', (e)=> {
+           e.preventDefault();
+           console.log(i); 
+           removeCl(menuList);
+           item.classList.toggle('tabheader__item_active');
+           disable(tabPhoto);
+            tabPhoto[i].classList.add('show', 'fade');
+            tabPhoto[i].classList.remove('hide');
         });
-     }
-
-   menuList.forEach( (e, i)=> {
-        e.addEventListener('click', (event)=> {
-            event.preventDefault();
-            removeCl(menuList);
-            e.classList.toggle('tabheader__item_active');
-            setTab(tabPhoto, e, "vegy", "Фитнес");
-            setTab(tabPhoto, e, "elite", "Премиум");
-            setTab(tabPhoto, e, "post", "Постное");
-            setTab(tabPhoto, e, "ham", "Сбалансированное");
-        });
+       
    });
+
+
 function setZero(obj){
-    console.log(obj);
     if(obj<10)
     {
         obj='0'+ obj;
