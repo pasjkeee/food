@@ -5,7 +5,11 @@ const   myTime = document.querySelectorAll('.timer__block'),
         endTime.setHours(23, 59, 59, 999);
 const myMenu = document.querySelector('.tabcontainer'),
       tabPhoto = myMenu.querySelectorAll('.tabcontent'),
-      menuList = myMenu.querySelectorAll('.tabheader__item');
+      menuList = myMenu.querySelectorAll('.tabheader__item'),
+      myButton = document.querySelectorAll('[data-model]'),
+
+      modal = document.querySelector('.modal'),
+      modalClose = modal.querySelector('.modal__close');
       
       function disable(tab) {
       tab.forEach( (exp)=> {
@@ -66,3 +70,52 @@ promTime.innerHTML = "";
 promTime.innerHTML +=`Мы ценим каждого клиента и предлагаем вам стать одним из них на очень выгодных условиях.`;
 promTime.innerHTML +=`Каждому, кто закажет доставку питание на неделю, будет предоставлена скидка в размере <span>20%!</span>`;
 promTime.innerHTML +=`<br><br> Акция закончится ${endTime.toLocaleString("ru")} `;
+
+
+function closeModal() {
+    modal.classList.add('hide');
+    modal.classList.remove('show');
+    document.body.style.overflow="";
+    }
+myButton.forEach((e) => {
+            e.addEventListener('click', () => {
+                if (e.dataset.model == "btnOpen") {
+                    modal.classList.add('show');
+                    modal.classList.remove('hide');
+                    document.body.style.overflow="hide";
+                }
+                if (e.dataset.model == "btnCall") {
+                    alert("В разработке");
+                }
+            });
+            modalClose.addEventListener('click', ()=> {
+               closeModal();
+            });
+            modal.addEventListener('click', (event)=> {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (eve) => {
+                if(eve.code === "Escape" && modal.classList.contains("show")) {
+                    closeModal();
+                }
+            });
+});
+
+const docH = document.documentElement.scrollHeight;
+function crollClose () {
+    let myH = document.documentElement.scrollTop;
+    const winH = window.innerHeight;
+    console.log("H", winH);
+    console.log(docH-myH);
+    if( docH-myH < winH ) {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow="hide";
+        window.removeEventListener('scroll', crollClose);
+    }
+}
+
+const meEv = window.addEventListener('scroll', crollClose);
