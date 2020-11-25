@@ -672,7 +672,7 @@ a {
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 4px;
-    max-height: 80vh;
+    max-height: 100vh;
     overflow-y: auto
 }
 

@@ -1,3 +1,5 @@
+//сonst { IgnorePlugin } = require("webpack");
+
 window.addEventListener('DOMContentLoaded', function() {
 
 const myTime = document.querySelectorAll('.timer__block'),
@@ -10,8 +12,8 @@ const myMenu = document.querySelector('.tabcontainer'),
     menuList = myMenu.querySelectorAll('.tabheader__item'),
     myButton = document.querySelectorAll('[data-model]'),
 
-    modal = document.querySelector('.modal'),
-    modalClose = modal.querySelector('.modal__close');
+    modal = document.querySelector('.modal');
+    //modalClose = modal.querySelector('.modal__close');
 
 function disable(tab) {
     tab.forEach((exp) => {
@@ -95,11 +97,9 @@ myButton.forEach((e) => {
             openModal();
         }
     });
-    modalClose.addEventListener('click', () => {
-        closeModal();
-    });
+
     modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
+        if (event.target === modal || event.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -164,14 +164,15 @@ new menuT("Даня привет", "В меню “Премиум” мы исп
 
 //Forms
 
-const forms = document.querySelectorAll('form');
+const forms = document.querySelectorAll('form'); //все формы в проекте
 
 const message = {
-    loading: 'Загрузка',
+    loading: 'icons/spinner.svg',
     success: 'Спасибо! Скоро мы с вами свяжемся',
     failure: 'ЧТо-то пошло не так..'
 };
-forms.forEach(item => {
+
+forms.forEach(item => {  //для каждой формы применяем функцию отправки
     postData(item);
 });
 
@@ -204,36 +205,72 @@ forms.forEach(item => {
 // }
 
 function postData(form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', (e) => {     //при дейтсвии submit
         e.preventDefault();
 
-        const statusMessage = document.createElement('div');
-        statusMessage.classList.add('status');
-        statusMessage.textContent = message.loading;
-        form.appendChild(statusMessage);
+        let statusMessage = document.createElement('img'); //создаём элемент
+        statusMessage.src = message.loading; //добавим класс статус
+        statusMessage.style.cssText = `
+        display: block;
+        margin: 0 auto;
+        `; 
+        form.insertAdjacentElement('beforeend', statusMessage); //загружаем в нашу форму этот див
 
-        const request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-
-         request.setRequestHeader('Content-type', 'application/json'); 
-        const formData = new FormData(form);
-
+        const formData = new FormData(form); //создаём форму
         const object = {};
-        formData.forEach(function(value,key){
+        formData.forEach(function (value, key) { //для каждого элемента formData записываем его в объект
             object[key] = value;
-        });
+        }); //создаём объект
 
-        const json = JSON.stringify(object);
-        request.send(json);
-
-        request.addEventListener('load', () => {
-            if (request.status === 200) {
-                console.log(request.response);
-                statusMessage.textContent = message.success;
-                form.reset();
-                setTimeout( (() => statusMessage.remove()), 2000);
-            } else { statusMessage.textContent = message.failure; }
-        });
+        fetch('se3rver.php', {
+                method: "POST",
+                body: JSON.stringify(object),
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            })
+            .then(response => {
+                return new Promise ( (resolve, reject) => {
+                const r = response.status;
+                if(r < 200 || r > 399) {
+                    reject();
+                }
+                console.log(r);
+                resolve(r);
+              });
+            })
+            .then(json => {
+                console.log("Showing good");
+                showThanksModal(message.success);
+                statusMessage.remove();
+                return(console.log(json));
+            })
+            .catch( () => {
+                     showThanksModal(message.failure);
+                     statusMessage.remove();
+                });
     });
 }
-});
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+        prevModalDialog.classList.remove('show');
+        prevModalDialog.classList.add('hide');
+        openModal();
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close >&times;</div>
+                <div class="modal__title" >${message}</div>
+            </div>
+            `;
+
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout( () => {
+            thanksModal.remove(); 
+            prevModalDialog.classList.add('show');  
+            prevModalDialog.classList.remove('hide');  
+            closeModal();}, 4000);
+    }
+ });
